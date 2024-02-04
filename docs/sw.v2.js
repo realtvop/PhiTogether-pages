@@ -4,40 +4,6 @@ var cacheStorageKey = "PTv0-";
 
 const CORE = ["/"];
 
-self.db = {
-  read: (key, config) => {
-    if (!config) {
-      config = { type: "text" };
-    }
-    return new Promise((resolve, reject) => {
-      caches
-        .match(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`))
-        .then(function (res) {
-          res.text().then((text) => resolve(text));
-        })
-        .catch(() => {
-          resolve(null);
-        });
-    });
-  },
-  write: (key, value) => {
-    return new Promise((resolve, reject) => {
-      caches
-        .open(`${cacheStorageKey}SwDB`)
-        .then(function (cache) {
-          cache.put(
-            new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`),
-            new Response(value)
-          );
-          resolve();
-        })
-        .catch(() => {
-          reject();
-        });
-    });
-  },
-};
-
 function parseURL(url) {
   let tmp = url.substr(url.indexOf("//") + 2);
   let host = tmp.substr(0, tmp.indexOf("/"));
@@ -88,7 +54,7 @@ function onlineFirst(request, key) {
         return response;
       });
     };
-    if (!navigator.onLine) return offlineFetch;
+    if (!navigator.onLine) return offlineFetch();
     return fetch(request)
       .then((response) => {
         if (response.ok) cache.put(request, response.clone());
@@ -125,7 +91,6 @@ self.addEventListener("fetch", async function (e) {
         e.respondWith(cacheFirst(e.request, cacheStorageKey + "User"));
         return;
       }
-      e.respondWith(cacheFirst(e.request, cacheStorageKey + "Charts"));
       return;
     } else if (urlParsed.host === "ptc.realtvop.eu.org" || urlParsed.host === "chart.phitogether.fun") {
       if (!urlParsed.path.includes("songs.json") && !urlParsed.path.includes("chapters.json")) e.respondWith(cacheFirst(e.request, cacheStorageKey + "Charts"));
