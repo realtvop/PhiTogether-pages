@@ -78,11 +78,14 @@ self.addEventListener("fetch", async function (e) {
   const urlOri = e.request.url;
   if (urlOri.startsWith("http")) {
     if (urlParsed.queryParam && urlParsed.queryParam.includes("nocacahe=nocache")) {
+      // 正常加载 && 旧 CacheStorage 迁移
       e.respondWith(cacheOrOnline(e.request, cacheStorageKey + (urlParsed.queryParam && urlParsed.queryParam.includes("key=Main") ? "Main" : "Charts")));
       return;
-    } else if (urlParsed.path.startsWith("/api/")) {
+    } else if (urlParsed.path.startsWith("/api/") || ((urlParsed.host.startsWith("api.") || urlParsed.host.startsWith("dev.")) && urlParsed.host.includes("phi"))) {
+      // 各类 Api
       return;
-    } else if (urlParsed.host === "res.phizone.cn" || urlParsed.host === "res.phi.zone" || urlParsed.host === "pzres.uotan.cn" || (urlParsed.path.startsWith("/PTVirtual/")) || (urlParsed.path.startsWith("/src/core/charts/"))) {
+    } else if (["res.phizone.cn", "res.phi.zone"].includes(urlParsed.host) || (urlParsed.path.startsWith("/PTVirtual/")) || (urlParsed.path.startsWith("/src/core/charts/"))) {
+      // PhiZone Res 和 IndexedDB 谱面
       if (urlParsed.path.startsWith("/PTVirtual/db/")) {
         e.respondWith(ptdbfetch(urlParsed.path));
         return;
@@ -91,16 +94,17 @@ self.addEventListener("fetch", async function (e) {
         e.respondWith(cacheFirst(e.request, cacheStorageKey + "User"));
         return;
       }
+      e.respondWith(cacheOrOnline(e.request, cacheStorageKey + "Charts"));
       return;
     } else if (urlParsed.host === "ptc.realtvop.eu.org" || urlParsed.host === "chart.phitogether.fun") {
+      // PhiTogether Community
       if (!urlParsed.path.includes("songs.json") && !urlParsed.path.includes("chapters.json")) e.respondWith(cacheFirst(e.request, cacheStorageKey + "Charts"));
       return;
-    } else if (["dev.phizone.cn", "api.phizone.cn", "api.phi.zone", "ud.realtvop.eu.org", "qrcode.realtvop.eu.org", "api.phitogether.realtvop.eu.org"].includes(urlParsed.host) || (urlParsed.host === "proxy.phitogether.fun" && ["phizoneApi", "ud", "qrc", "uai"].includes(urlParsed.path.split("/")[1]))) {
-      return;
     } else if (urlParsed.host.endsWith("realtvop.eu.org") && !urlParsed.host.includes("er-vi")) {
+      // TODO: realtvop答应写资源包管理器
       e.respondWith(cacheFirst(e.request, cacheStorageKey + "Res-" + urlParsed.host));
       return;
-    } else if (!urlParsed.path.startsWith("/api/")) {
+    } else {
       if (self.location.port === "1145") return;
       if (urlParsed.path.startsWith("/#/")) {
         e.respondWith(cacheFirst("/", cacheStorageKey + "Main"));
@@ -149,7 +153,7 @@ async function ptdbfetch(url, meta) {
                               } else return null;
                           });
           if (!chart) return await fetch(url);
-          if (parsedHash[0] === "assets") return new Response(chart.assetsFile[parseInt(parsedHash[2]).file], { url: `https://realtvop.sb/${chart.assetsFile[parseInt(parsedHash[2])].name}` });
+          if (parsedHash[0] === "assets") return new Response(chart.assetsFile[parseInt(parsedHash[2]).file], { url: `https://sb.realtvop.internal/${chart.assetsFile[parseInt(parsedHash[2])].name}` });
           else return new Response(chart.chartFile);
       } else if (parsedHash[0] === "song" || parsedHash[0] === "illustration") {
           const song = await getCachedSong(parsedHash[1])

@@ -26,6 +26,7 @@
 		};
 		window.spec.isAndroidApp = !window.spec.isAppleDevice && window.spec.isPhiTogetherApp;
 		window.spec.isiOSDevice = window.spec.isAppleDevice && !navigator.userAgent.includes('Mac OS X');
+		window.spec.antiAdditionEnabled = window.nativeApi && window.nativeApi.antiAddiction_enabled && window.nativeApi.antiAddiction_enabled();
 		// 节日活动
 		const partyMgr = {
 			list: {
@@ -76,12 +77,11 @@
 	</script>
 	
 	<script src="https://www.googletagmanager.com/gtag/js?id=G-NVFVE35LMW"></script>
+	<!-- <script defer src="/src/utils/js/ac.js" type="module"></script> -->
 	
 	
 	
 	
-	
-	<script src="https://cdn.bootcdn.net/ajax/libs/eruda/2.11.2/eruda.min.js" type="module"></script>
 	<link rel="apple-touch-icon" href="/src/core/lg512y512.png" />
 	<script>
 		if (window.gtagLoaded) {
@@ -92,13 +92,14 @@
 		}
 	</script>
 	<script defer> setTimeout(() => { window.scrollTo({ top: 0 }) }, 500) </script>
-  <script type="module" crossorigin src="/assets/index-fbbec378.js"></script>
-  <link rel="stylesheet" href="/assets/index-1410a75d.css">
+  <script type="module" crossorigin src="/assets/index-cd3f531a.js"></script>
+  <link rel="stylesheet" href="/assets/index-8e20a9e3.css">
 </head>
 
 
 <body>
 	<div class="main" style="text-align: center;">
+		<div id="forEruda"></div>
 		<div class="background" onload="getBgScale()"></div>
 		<div id="multiplayer" v-cloak></div>
 		<div id="app" v-cloak style="display: none;">
@@ -148,33 +149,33 @@
 				<div id="select" class="disabled">
 					<div id="select2" style="display:none;"><br />
 						<div id="uploader">
-							<input type="button" id="uploader-upload" value="加载本地文件">
+							<input type="button" id="uploader-upload" :value="$t('settings.uploader.loadFile')">
 							<div id="uploader-select">
-								<label id="uploader-file">加载文件</label>
-								<label id="uploader-dir">加载文件夹</label>
+								<label id="uploader-file">{{ $t("settings.uploader.loadFileType.file") }}</label>
+								<label id="uploader-dir">{{ $t("settings.uploader.loadFileType.folder") }}</label>
 							</div>
 						</div><br />
 						<br /><br />
-						<div>谱面：<select id="select-chart" class="disabled-when-selected" style="width:6em"></select>
+						<div>{{ $t("settings.uploader.chart") }}{{ $t("info.colon") }}<select id="select-chart" class="disabled-when-selected" style="width:6em"></select>
 						</div>
-						<div>音乐：<select id="select-bgm" style="width:6em" class="disabled-when-selected"></select></div>
-						<div>图片：<select id="select-bg" style="width:6em" class="disabled-when-selected"></select></div>
+						<div>{{ $t("settings.uploader.music") }}{{ $t("info.colon") }}<select id="select-bgm" style="width:6em" class="disabled-when-selected"></select></div>
+						<div>{{ $t("settings.uploader.illustration") }}{{ $t("info.colon") }}<select id="select-bg" style="width:6em" class="disabled-when-selected"></select></div>
 						<br>
 						<div>
-							<div>曲名：<input id="input-name" class="input textInput" style="width:7em"
+							<div>{{ $t("settings.uploader.info.name") }}{{ $t("info.colon") }}<input id="input-name" class="input textInput" style="width:7em"
 									placeholder="&#60; Untitled &#62;">
 							</div>
-							<div>曲师：<input id="input-artist" class="input textInput" style="width:7em"
+							<div>{{ $t("settings.uploader.info.artist") }}{{ $t("info.colon") }}<input id="input-artist" class="input textInput" style="width:7em"
 									placeholder="&#60; nameless &#62;">
 							</div><br>
-							<div>画师：<input id="input-illustrator" class="input textInput" style="width:7em"
+							<div>{{ $t("settings.uploader.info.illustrator") }}{{ $t("info.colon") }}<input id="input-illustrator" class="input textInput" style="width:7em"
 									placeholder="&#60; nameless &#62;"></div>
-							<div>谱师：<input id="input-charter" class="input textInput" style="width:7em"
+							<div>{{ $t("settings.uploader.info.charter") }}{{ $t("info.colon") }}<input id="input-charter" class="input textInput" style="width:7em"
 									placeholder="&#60; nameless &#62;"></div><br>
-							<div>等级：<input id="select-difficulty" value="SP" style="width:3em">
+							<div>{{ $t("settings.uploader.info.difficulty") }}{{ $t("info.colon") }}<input id="select-difficulty" value="SP" style="width:3em">
 								</input>
 							</div>
-							<div>定数：<input id="select-level" value="?" class="input textInput" style="width:3em">
+							<div>{{ $t("settings.uploader.info.level") }}{{ $t("info.colon") }}<input id="select-level" value="?" class="input textInput" style="width:3em">
 								</input>
 							</div><br>
 						</div><br />
@@ -197,39 +198,44 @@
 						<div style="display: block; text-align: left; margin-left: 5%;">
 							<div style="display: block;">
 								<span
-									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">显示</span>
+									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">{{ $t("settings.settings.display.title") }}</span>
 								<br />
+								<div>语言 / Language: <select v-model="localeValue">
+									<option value="zh_CN">简体中文</option>
+									<option value="zh_TW">正體中文</option>
+									<option value="en_US">English</option>
+								</select></div><br /><br />
 								<div><input type="checkbox" id="showAcc" v-model="gameConfig.showAcc"><label
-										for="showAcc">显示Acc</label></div>
+										for="showAcc">{{ $t("settings.settings.display.showAcc") }}</label></div>
 								<div><input type="checkbox" id="highLight" v-model="gameConfig.highLight"><label
-										for="highLight">多押高亮</label></div>
+										for="highLight">{{ $t("settings.settings.display.highLight") }}</label></div>
 								<div><input type="checkbox" id="lineColor" v-model="gameConfig.lineColor"><label
-										for="lineColor">FC/AP指示器</label></div>
+										for="lineColor">{{ $t("settings.settings.display.lineColor") }}</label></div>
 								<br />
 								<div><input type="checkbox" id="feedback" v-model="gameConfig.feedback"><label
-										for="feedback">触摸反馈</label></div>
+										for="feedback">{{ $t("settings.settings.display.feedback") }}</label></div>
 								<div><input type="checkbox" id="imageBlur" v-model="gameConfig.imageBlur"><label
-										for="imageBlur">背景模糊</label></div>
+										for="imageBlur">{{ $t("settings.settings.display.imageBlur") }}</label></div>
 								<div><input type="checkbox" id="showCE2" v-model="gameConfig.showCE2"><label
-										for="showCE2">Early/Late特效</label></div>
+										for="showCE2">{{ $t("settings.settings.display.showCE2") }}</label></div>
 								<div><input type="checkbox" id="enableVP" v-model="gameConfig.enableVP"><label
-										for="enableVP">隐藏距离较远的音符</label></div>
+										for="enableVP">{{ $t("settings.settings.display.enableVP") }}</label></div>
 								<br />
 								<div><input type="checkbox" id="enableFR" v-model="gameConfig.enableFR"><label
-										for="enableFR">使用单精度浮点运算</label></div>
+										for="enableFR">{{ $t("settings.settings.display.enableFR") }}</label></div>
 								<div><input type="checkbox" id="JITSOpen" v-model="gameConfig.JITSOpen"><label
-										for="JITSOpen">联机实时排名</label>
+										for="JITSOpen">{{ $t("settings.settings.display.JITSOpen") }}</label>
 								</div>
 								<div><input type="checkbox" id="enhanceRankVis"
 										v-model="gameConfig.enhanceRankVis"><label
-										for="enhanceRankVis">增强实时排名能见度</label></div>
+										for="enhanceRankVis">{{ $t("settings.settings.display.enhanceRankVis") }}</label></div>
 								<br />
 								<div><input type="checkbox" id="enableFilter" v-model="gameConfig.enableFilter"><label
-										for="enableFilter">启用滤镜</label></div><br />
+										for="enableFilter">{{ $t("settings.settings.display.enableFilter") }}</label></div><br />
 								<div :style="{display:gameConfig.enableFilter?'block':'none'}"><textarea
-										id="filterInput" class="textInput" v-model="gameConfig.filterInput" placeholder="在此输入着色器代码"
+										id="filterInput" class="textInput" v-model="gameConfig.filterInput" :placeholder='$t("settings.settings.display.filterInputPlaceholder")'
 										style="width:150px;height:1em;margin-left:10px"></textarea></div><br />
-								<div>宽高比：<select id="select-aspect-ratio" style="width:4em"
+								<div>{{ $t("settings.settings.display.aspectRatio") }}{{ $t("info.colon") }}<select id="select-aspect-ratio" style="width:4em"
 										v-model="gameConfig.aspectRatio">
 										<option value="1.25">5:4</option>
 										<option value="1.333333">4:3</option>
@@ -241,46 +247,49 @@
 										<option value="1.777778">16:9</option>
 									</select>
 								</div>
-								<div>按键缩放：<select id="select-note-scale" style="width:4em"
+								<div>{{ $t("settings.settings.display.noteScale") }}{{ $t("info.colon") }}<select id="select-note-scale" style="width:4em"
 										v-model="gameConfig.noteScale">
-										<option value="0.8">极小</option>
-										<option value="0.9">较小</option>
-										<option value="1">默认</option>
-										<option value="1.15">较大</option>
-										<option value="1.3">极大</option>
+										<option value="0.8">{{ $t("settings.settings.display.noteScaleOptions.smaller") }}</option>
+										<option value="0.9">{{ $t("settings.settings.display.noteScaleOptions.small") }}</option>
+										<option value="1">{{ $t("settings.settings.display.noteScaleOptions.default") }}</option>
+										<option value="1.15">{{ $t("settings.settings.display.noteScaleOptions.large") }}</option>
+										<option value="1.3">{{ $t("settings.settings.display.noteScaleOptions.larger") }}</option>
 									</select>
 								</div><br>
-								<div>背景变暗：<select id="select-background-dim" style="width:4em"
+								<div>{{ $t("settings.settings.display.backgroundDim") }}{{ $t("info.colon") }}<select id="select-background-dim" style="width:4em"
 										v-model="gameConfig.backgroundDim">
-										<option value="1">黑暗</option>
-										<option value="0.8">昏暗</option>
-										<option value="0.6">默认</option>
-										<option value="0.4">较亮</option>
-										<option value="0.2">明亮</option>
+										<option value="1">{{ $t("settings.settings.display.backgroundDimOptions.dark") }}</option>
+										<option value="0.8">{{ $t("settings.settings.display.backgroundDimOptions.dim") }}</option>
+										<option value="0.6">{{ $t("settings.settings.display.backgroundDimOptions.default") }}</option>
+										<option value="0.4">{{ $t("settings.settings.display.backgroundDimOptions.bright") }}</option>
+										<option value="0.2">{{ $t("settings.settings.display.backgroundDimOptions.light") }}</option>
 									</select>
 								</div>
-								<div>排名依据偏好：<select id="select-rankmethod" style="width:5em"
+								<div>{{ $t("settings.settings.display.defaultRankMethod") }}{{ $t("info.colon") }}<select id="select-rankmethod" style="width:5em"
 										v-model="gameConfig.defaultRankMethod">
-										<option value="score">按分数</option>
-										<option value="acc">按Acc</option>
+										<option value="score">{{ $t("settings.settings.display.defaultRankMethodOptions.score") }}</option>
+										<option value="acc">{{ $t("settings.settings.display.defaultRankMethodOptions.acc") }}</option>
 									</select>
 								</div>
 							</div>
 							<br />
 							<div style="display: block;">
 								<span
-									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">性能</span>
+									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">{{ $t("settings.settings.performance.title") }}</span>
 								<br />
+								<input type="button" @click="(gameConfig.noUIBlur = gameConfig.lowRes = true),(gameConfig.autoDelay = false)" v-if="!gameConfig.noUIBlur || !gameConfig.lowRes || gameConfig.autoDelay"
+									:value='$t("settings.settings.performance.useRecommendConfigurationsForLowPerformanceDevices")'>
+								<br v-if="!gameConfig.noUIBlur || !gameConfig.lowRes || gameConfig.autoDelay" />
 								<div><input type="checkbox" id="noUIBlur" v-model="gameConfig.noUIBlur"><label
-										for="noUIBlur">禁用界面模糊</label></div>
+										for="noUIBlur">{{ $t("settings.settings.performance.noUIBlur") }}</label></div>
 								<div><input type="checkbox" id="lowRes" v-model="gameConfig.lowRes"><label
-										for="lowRes">降低渲染精度</label></div>
+										for="lowRes">{{ $t("settings.settings.performance.lowRes") }}</label></div>
 								<br />
 								<div><input type="checkbox" id="autoDelay" v-model="gameConfig.autoDelay"><label
-										for="autoDelay">实时延迟矫正（音频卡顿请取消勾选）</label></div>
+										for="autoDelay">{{ $t("settings.settings.performance.autoDelay") }}</label></div>
 								<br />
 								<div><input type="checkbox" id="isMaxFrame" v-model="gameConfig.isMaxFrame"><label
-										for="isMaxFrame">帧率锁定</label></div>
+										for="isMaxFrame">{{ $t("settings.settings.performance.isMaxFrame") }}</label></div>
 								<input id="maxFrame" type="number" min="25" max="1000" class="input"
 									style="width:4em" placeholder="60"
 									:style="{display: gameConfig.isMaxFrame?'inline-block':'none'}"
@@ -288,83 +297,83 @@
 							</div><br />
 							<div style="display: block;">
 								<span
-									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">资源</span>
+									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">{{ $t("settings.settings.resources.title") }}</span>
 								<br />
 								<div><input type="checkbox" id="usekwlevelOverbgm"
 										v-model="gameConfig.usekwlevelOverbgm"><label
-										for="usekwlevelOverbgm">使用旧版结算音乐</label></div><br>
-								<div>资源包类型：<select id="select-resource-type" style="width:8em"
+										for="usekwlevelOverbgm">{{ $t("settings.settings.resources.usekwlevelOverbgm") }}</label></div><br>
+								<div>{{ $t("settings.settings.resources.resourcesType") }}{{ $t("info.colon") }}<select id="select-resource-type" style="width:8em"
 										v-model="gameConfig.resourcesType">
-										<option value="together-pack-1">预设1</option>
-										<option value="together-pack-2">预设2</option>
-										<option value="prpr-custom">自定义资源包(暂不可用)</option>
-										<option value="pt-custom">PT在线资源包(需手动刷新页面)</option>
+										<option value="together-pack-1">{{ $t("settings.settings.resources.resourceTypes.preset1") }}</option>
+										<option value="together-pack-2">{{ $t("settings.settings.resources.resourceTypes.preset2") }}</option>
+										<option value="prpr-custom">{{ $t("settings.settings.resources.resourceTypes.prprCustom") }}</option>
+										<option value="pt-custom">{{ $t("settings.settings.resources.resourceTypes.PTCustom") }}</option>
 									</select>
 								</div>
 								<div v-if="gameConfig.resourcesType==='prpr-custom'">
-									资源包：<select id="select-resource-id" style="width:8em"
+									{{ $t("settings.settings.resources.respack") }}{{ $t("info.colon") }}<select id="select-resource-id" style="width:8em"
 										v-model="gameConfig.prprRespackID">
 										<option v-for="respack in prprRespacks" v-bind:value="respack.id">{{ `${respack.name} (by ${respack.author})` }}</option>
 									</select>
 								</div>
-								<input type="button" v-on:click="uploadCustomRespack()"
-									v-if="gameConfig.resourcesType==='prpr-custom'" value="上传自定义资源包">
+								<input type="button" @click="removeThisRespack"
+									v-if="gameConfig.resourcesType==='prpr-custom' && gameConfig.prprRespackID" :value='$t("settings.settings.resources.removeThisRespack")'>
+								<input type="button" @click="uploadCustomRespack"
+									v-if="gameConfig.resourcesType==='prpr-custom'" :value='$t("settings.settings.resources.uploadCustomRespack")'>
 								<input type="button"
-									onclick="shared.game.msgHandler.info('视频:av998035635 也可在 飞机上的长电视 的B站主页查找', '在B站观看使用与设计教程')"
-									v-if="gameConfig.resourcesType==='pt-custom'" value="使用教程">
+									onclick='shared.game.msgHandler.info(shared.game.ptmain.$t("settings.settings.resources.ptTutorialMessage"), shared.game.ptmain.$t("settings.settings.resources.ptTutorialTitle"))'
+									v-if="gameConfig.resourcesType==='pt-custom'" :value='$t("settings.settings.resources.ptTutorial")'>
 								<input id="customResourceLink" class="input textInput" style="width:15em"
-									placeholder="输入资源的json文件地址"
+									:placeholder='$t("settings.settings.resources.customResourceLinkPlaceholder")'
 									:style="{display: gameConfig.resourcesType==='pt-custom'?'inline-block':'none'}"
 									v-model="gameConfig.customResourceLink">
-								<input type="button" onclick="location.reload()"
-									v-if="gameConfig.resourcesType==='pt-custom'" value="刷新页面">
+								<input type="button" onclick="loadCustomRes"
+									v-if="gameConfig.resourcesType==='pt-custom'" :value='$t("settings.settings.resources.loadResButton")'>
 								<br />
 								<input id="input-offset" type="number" step="5" class="input textInput" style="display:none;"
 									placeholder="0" v-bind:value="chartOffsetActual">
-								<div class="disabled-when-playing textInput">输入延迟(ms)：<input id="input-offset-surface"
+								<div class="disabled-when-playing textInput">{{ $t("settings.settings.resources.inputOffset") }}(ms){{ $t("info.colon") }}<input id="input-offset-surface"
 										type="number" step="5" class="input textInput" style="width:4em" placeholder="0"
 										v-model="gameConfig.inputOffset"></div>
-								<input type="button" v-on:click="doCalibrate()" value="校准输入延迟"><br />
-								<div>音效音量：<select id="select-volume" style="width:5em" v-model="gameConfig.volume">
-										<option value="0">关闭</option>
-										<option value="0.5">蚊子叫（？</option>
-										<option value="1">极轻</option>
-										<option value="1.25">较轻</option>
-										<option value="1.5" selected>常规</option>
-										<option value="2">较响</option>
-										<option value="4">极响</option>
+								<input type="button" v-on:click="doCalibrate()" :value='$t("settings.settings.resources.doCalibrate")'><br />
+								<div>{{ $t("settings.settings.resources.volume") }}{{ $t("info.colon") }}<select id="select-volume" style="width:5em" v-model="gameConfig.volume">
+										<option value="0">{{ $t("settings.settings.resources.volumeOptions.off") }}</option>
+										<option value="0.5">{{ $t("settings.settings.resources.volumeOptions.low") }}</option>
+										<option value="1" selected>{{ $t("settings.settings.resources.volumeOptions.veryLow") }}</option>
+										<option value="1.25">{{ $t("settings.settings.resources.volumeOptions.mediumLow") }}</option>
+										<option value="1.5">{{ $t("settings.settings.resources.volumeOptions.regular") }}</option>
+										<option value="2">{{ $t("settings.settings.resources.volumeOptions.high") }}</option>
+										<option value="4">{{ $t("settings.settings.resources.volumeOptions.veryHigh") }}</option>
 									</select>
 								</div>
 							</div>
 							<br />
 							<div style="display: block;">
 								<span
-									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">试验</span>
+									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">{{ $t("settings.settings.experimental.title") }}</span>
 								<br />
 								<div style="margin:auto;">
-									<input type="button" @click="modJudgment()" value="调整判定范围">
+									<input type="button" @click="modJudgment()" :value='$t("settings.settings.experimental.adjustJudgmentRangeButton")'>
 								</div>
 								<div style="margin:auto;">
-									<input type="button" onclick="eruda.init(); document.getElementById('disableDebugBtn').style = 'display:block'; document.getElementById('eruda').style = 'display:block';  document.getElementById('debugBtn').style = 'display:none';"
-									value="启用调试工具" id="debugBtn">
-									<input type="button" style="display:none;" onclick="document.getElementById('disableDebugBtn').style = 'display:none'; document.getElementById('eruda').style = 'display:none';  document.getElementById('debugBtn').style = 'display:block';"
-									value="关闭调试工具" id="disableDebugBtn">
+									<input type="button" @click="debugEnabled=!debugEnabled"
+									:value='debugEnabled? $t("settings.settings.experimental.disableDebugToolsButton") : $t("settings.settings.experimental.enableDebugToolsButton")' id="debugBtn">
 								</div><br />
 								<input type="checkbox" id="fullScreenJudge" v-model="gameConfig.fullScreenJudge"><label
-									for="fullScreenJudge">全屏判定</label>
+									for="fullScreenJudge">{{ $t("settings.settings.experimental.fullScreenJudge") }}</label>
 								<input type="checkbox" id="stopWhenNoLife" v-model="gameConfig.stopWhenNoLife"><label
-									for="stopWhenNoLife">血量为0自动停止</label>
+									for="stopWhenNoLife">{{ $t("settings.settings.experimental.stopWhenNoLife") }}</label>
 								<input type="checkbox" id="reviewWhenResume"
-									v-model="gameConfig.reviewWhenResume"><label for="reviewWhenResume">恢复时预览前3秒</label>
+									v-model="gameConfig.reviewWhenResume"><label for="reviewWhenResume">{{ $t("settings.settings.experimental.reviewWhenResume") }}</label>
 								<br />
 								<div><input type="checkbox" id="isForcedMaxFrame" v-model="gameConfig.isForcedMaxFrame"><label
-										for="isForcedMaxFrame">强制锁定帧率(可能导致画面卡顿)</label></div>
+										for="isForcedMaxFrame">{{ $t("settings.settings.experimental.isForcedMaxFrame") }}</label></div>
 							</div>
 							<br />
 							<div v-if="gameConfig.account.userBasicInfo && gameConfig.account.userBasicInfo.isPTDeveloper"
 								style="display: block;">
 								<span
-									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">内部</span>
+									style="font-size:xx-large; font-weight: bold; color:darkslategray; margin:auto">Internal</span>
 								<br />
 								<input type="checkbox" id="autoplay" v-model="gameConfig.autoplay"><label
 									for="autoplay">Autoplay</label>
@@ -374,7 +383,7 @@
 									v-model="gameConfig.allowNonFullscreen"><label for="allowNonFullscreen">AnF</label>
 								<br />
 								<input id="customChartServer" class="input textInput" style="width:15em"
-									placeholder="输入自定义谱面服务器地址" v-model="gameConfig.customChartServer">
+									placeholder="Input custom chart lib url" v-model="gameConfig.customChartServer">
 							</div>
 						</div>
 					</div>
@@ -384,7 +393,7 @@
 					<div id="gameAdjust" style="display:none;">
 						<div class="divider">——— 游戏调节 ———</div><br />
 						<div id="easyAdjust">
-							<div class="">谱面镜像：<select id="select-flip" style="width:4em">
+							<div class="">谱面镜像{{ $t("info.colon") }}<select id="select-flip" style="width:4em">
 									<option value="0" selected>无</option>
 									<option value="1">X 开启</option>
 									<option value="2">Y 开启(转板)</option>
@@ -392,7 +401,7 @@
 								</select>
 							</div>
 							<div>
-								<div class="disabled-when-playing">音乐变速：<select id="select-speed"
+								<div class="disabled-when-playing">音乐变速{{ $t("info.colon") }}<select id="select-speed"
 										style="width:4em">
 										<option value="Slowest">极慢</option>
 										<option value="Slower">较慢</option>
@@ -403,12 +412,13 @@
 								</div>
 							</div>
 							<br />
-							<div class="disabled-when-playing">谱面延迟(ms)：
+							<div class="disabled-when-playing">谱面延迟(ms){{ $t("info.colon") }}
 								<input id="chart-offset-surface" type="number" step="5" class="input" style="width:4em"
 									placeholder="0" v-model="chartOffsetSurface">
 							</div><br />
 						</div><br /><br />
 					</div>
+					<!-- plz dont translate these btns "value" below -->
 					<div id="playpause" style="display:none;">
 						<input type="button" id="btn-play" value="播放">
 						<input type="button" id="btn-pause" value="暂停">
@@ -424,9 +434,8 @@
 				</div>
 			</div>
 		</div>
-		<div id="view-msg" style="display:none;"></div>
 	</div>
-	<noscript><strong style="color:red">此浏览器不支持JavaScript，该程序无法运行。</strong></noscript>
+	<noscript><strong style="color:red">此浏览器不支持JavaScript，PhiTogether 无法运行。 / PhiTogether can't run as this browser doesn't support JavaScript.</strong></noscript>
 	<script>
 		if (spec.isPhiTogetherApp || [80, 443, 1443, "1443", "", "1145"].includes(location.port))
 			navigator.serviceWorker.register('/sw.v2.js', { scope: '/' })
